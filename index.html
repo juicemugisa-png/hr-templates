@@ -1,0 +1,1061 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Things Worth Thinking About</title>
+<meta name="description" content="A personal journal of reflections on life, people and the way we see the world.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&family=Hanken+Grotesk:wght@400;600&display=swap">
+<style>
+/* Layout: a quiet single column journal. A masthead, a filterable index of entries,
+   and a separate narrow reading view at its own #address for each reflection. */
+:root {
+  --bg:#f4f2ec;
+  --surface:#fbfaf6;
+  --ink:#242a25;
+  --muted:#6b7269;
+  --line:#dedad0;
+  --accent:#3f6650;
+  --accent-soft:#e4ece4;
+  --focus:#2f5a45;
+  --display:"Fraunces",Georgia,"Times New Roman",serif;
+  --body:"Newsreader",Georgia,"Times New Roman",serif;
+  --ui:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:#141915; --surface:#1b211c; --ink:#e7e4d9; --muted:#9aa296;
+    --line:#2d352e; --accent:#9cc3a7; --accent-soft:#233028; --focus:#b5d6bf;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:#141915; --surface:#1b211c; --ink:#e7e4d9; --muted:#9aa296;
+  --line:#2d352e; --accent:#9cc3a7; --accent-soft:#233028; --focus:#b5d6bf;
+  color-scheme:dark;
+}
+
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font:1.0625rem/1.7 var(--body);
+  padding-block:0 0;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+}
+button, input { font:inherit; color:inherit; }
+a { color:inherit; }
+:focus-visible { outline:2px solid var(--focus); outline-offset:3px; border-radius:6px; }
+
+.wrap { width:100%; max-width:960px; margin-inline:auto; min-width:0; }
+
+.label {
+  font-family:var(--ui);
+  font-size:.72rem;
+  font-weight:600;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin:0;
+}
+
+/* Masthead */
+.masthead { padding-block:56px 40px; }
+h1 {
+  font-family:var(--display);
+  font-weight:300;
+  font-size:clamp(2.7rem, 9vw, 5.4rem);
+  line-height:1.02;
+  letter-spacing:-.03em;
+  margin:18px 0 22px;
+  text-wrap:balance;
+}
+h1 em { font-style:italic; color:var(--accent); }
+.intro { max-width:34em; color:var(--muted); font-size:1.15rem; margin:0; }
+
+/* Controls */
+.controls { display:flex; flex-direction:column; gap:18px; padding-block:8px 6px; }
+.search {
+  width:100%;
+  padding:13px 16px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--surface);
+  font-family:var(--ui);
+  font-size:.95rem;
+}
+.search::placeholder { color:var(--muted); }
+.filters { display:flex; flex-wrap:wrap; gap:8px; }
+.filter {
+  font-family:var(--ui);
+  font-size:.85rem;
+  padding:7px 15px;
+  border:1px solid var(--line);
+  background:transparent;
+  border-radius:999px;
+  cursor:pointer;
+  transition:background .15s, border-color .15s;
+}
+.filter:hover { border-color:var(--accent); }
+.filter[aria-pressed="true"] { background:var(--accent-soft); border-color:var(--accent); color:var(--accent); }
+.count { padding-block:26px 14px; }
+
+/* Index of entries */
+.grid {
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:18px;
+  padding-bottom:72px;
+}
+.card {
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  padding:26px 26px 22px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:14px;
+  text-decoration:none;
+  transition:transform .2s ease, border-color .2s ease;
+}
+.card:hover { transform:translateY(-3px); border-color:var(--accent); }
+.card h2 {
+  font-family:var(--display);
+  font-weight:400;
+  font-size:1.7rem;
+  line-height:1.2;
+  letter-spacing:-.01em;
+  margin:14px 0 10px;
+  text-wrap:balance;
+}
+.card p { margin:0; color:var(--muted); }
+.card .meta {
+  margin-top:auto;
+  padding-top:24px;
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  font-family:var(--ui);
+  font-size:.8rem;
+  color:var(--accent);
+}
+.empty { color:var(--muted); padding-bottom:72px; margin:0; }
+
+/* Reading view */
+.reader { max-width:680px; margin-inline:auto; padding-block:36px 56px; }
+.back {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-family:var(--ui);
+  font-size:.85rem;
+  color:var(--muted);
+  text-decoration:none;
+  padding:6px 0;
+}
+.back:hover { color:var(--accent); }
+.reader h2 {
+  font-family:var(--display);
+  font-weight:300;
+  font-size:clamp(2.3rem, 7vw, 3.8rem);
+  line-height:1.08;
+  letter-spacing:-.025em;
+  margin:20px 0 16px;
+  text-wrap:balance;
+}
+.reader h2:focus { outline:none; }
+.reader .lede { color:var(--muted); font-style:italic; font-size:1.2rem; margin:0 0 6px; }
+.reader .time { font-family:var(--ui); font-size:.8rem; color:var(--muted); margin:0; }
+.prose { padding-top:36px; font-size:1.3rem; line-height:1.85; }
+.prose p { margin:0 0 1.4em; max-width:34em; }
+.prompt {
+  margin-top:44px;
+  padding:26px 28px;
+  background:var(--accent-soft);
+  border-radius:12px;
+}
+.prompt .label { margin-bottom:10px; }
+.prompt p {
+  margin:0;
+  font-family:var(--display);
+  font-style:italic;
+  font-weight:300;
+  font-size:1.45rem;
+  line-height:1.4;
+  color:var(--ink);
+}
+.pager {
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:14px;
+  margin-top:56px;
+  padding-top:26px;
+  border-top:1px solid var(--line);
+}
+.pager a {
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  text-decoration:none;
+  padding:8px 0;
+  min-width:0;
+}
+.pager a.next { text-align:right; grid-column:2; }
+.pager .title { font-family:var(--display); font-size:1.15rem; line-height:1.3; }
+.pager a:hover .title { color:var(--accent); }
+
+footer {
+  border-top:1px solid var(--line);
+  padding-block:26px 44px;
+  font-family:var(--ui);
+  font-size:.8rem;
+  color:var(--muted);
+}
+
+/* Site navigation */
+.sitenav {
+  display:flex;
+  gap:26px;
+  padding-block:26px 0;
+  font-family:var(--ui);
+  font-size:.85rem;
+  border-bottom:1px solid var(--line);
+}
+.sitenav a {
+  text-decoration:none;
+  color:var(--muted);
+  padding:6px 0 12px;
+  margin-bottom:-1px;
+  border-bottom:2px solid transparent;
+}
+.sitenav a:hover { color:var(--ink); }
+.sitenav a[aria-current="page"] { color:var(--accent); border-bottom-color:var(--accent); font-weight:600; }
+
+/* Templates */
+.shop-intro { max-width:36em; }
+.shop-note { font-family:var(--ui); font-size:.8rem; color:var(--muted); margin:0; padding-bottom:72px; max-width:46em; }
+.products {
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:18px;
+  padding-bottom:18px;
+  align-items:stretch;
+}
+.product {
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  padding:28px 24px 24px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:14px;
+}
+.product.featured { border-color:var(--accent); background:var(--accent-soft); }
+.product h3 {
+  font-family:var(--display);
+  font-weight:400;
+  font-size:1.5rem;
+  line-height:1.2;
+  margin:12px 0 8px;
+  text-wrap:balance;
+}
+.product .tagline { margin:0; color:var(--muted); }
+.product .price {
+  font-family:var(--display);
+  font-size:1.25rem;
+  font-weight:400;
+  margin:20px 0 4px;
+  font-variant-numeric:tabular-nums;
+}
+.product ul { list-style:none; margin:14px 0 24px; padding:0; display:grid; gap:8px; font-size:1rem; }
+.product li { padding-left:22px; position:relative; }
+.product li::before { content:"\2713"; position:absolute; left:0; color:var(--accent); font-family:var(--ui); font-size:.85rem; top:.1em; }
+.btn {
+  margin-top:auto;
+  display:block;
+  text-align:center;
+  font-family:var(--ui);
+  font-weight:600;
+  font-size:.9rem;
+  text-decoration:none;
+  padding:12px 16px;
+  border-radius:10px;
+  background:var(--accent);
+  color:var(--bg);
+}
+.btn:hover { filter:brightness(1.08); }
+.btn.off { background:transparent; color:var(--muted); border:1px dashed var(--line); }
+
+/* Trainings */
+.courses { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:18px; padding-bottom:30px; }
+.course { display:flex; flex-direction:column; min-width:0; padding:26px 24px 24px; background:var(--surface); border:1px solid var(--line); border-radius:14px; }
+.course h3 { font-family:var(--display); font-weight:400; font-size:1.45rem; line-height:1.25; margin:12px 0 8px; text-wrap:balance; }
+.course .summary { margin:0; color:var(--muted); }
+.course .facts-list { list-style:none; margin:18px 0 22px; padding:14px 0 0; border-top:1px solid var(--line); display:grid; gap:6px; font-family:var(--ui); font-size:.85rem; }
+.course .facts-list li { display:flex; justify-content:space-between; gap:16px; min-width:0; }
+.course .facts-list span:first-child { color:var(--muted); flex:none; }
+.course .facts-list span:last-child { text-align:right; min-width:0; }
+.course .btn { margin-top:auto; }
+#trainFilters, #trainPrice { margin-bottom:12px; }
+#trainEmpty { padding-bottom:40px; max-width:40em; }
+@media (max-width:900px) { .courses { grid-template-columns:1fr; } }
+
+/* Problem and fix */
+.fixes { padding-bottom:36px; }
+.fixes-head, .fix { display:grid; grid-template-columns:minmax(0, .8fr) minmax(0, 1.2fr) minmax(0, 1.2fr); gap:8px 32px; }
+.fixes-head { padding-bottom:10px; }
+.fix { padding:16px 0; border-top:1px solid var(--line); }
+.fix p { margin:0; min-width:0; }
+.fix .stage { font-family:var(--display); font-size:1.2rem; line-height:1.3; }
+.fix .problem { color:var(--muted); }
+.price-line { font-family:var(--display); font-size:1.15rem; margin-top:8px !important; color:var(--ink) !important; }
+.fix .remedy { color:var(--accent); }
+.pricing { font-family:var(--ui); font-size:.85rem; color:var(--muted); margin:0 0 16px; max-width:46em; }
+@media (max-width:650px) {
+  .fixes-head { display:none; }
+  .fix { grid-template-columns:1fr; gap:4px; }
+  .fix .stage { color:var(--accent); }
+}
+
+/* Country packs */
+.country {
+  padding:28px;
+  margin-bottom:18px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:14px;
+  display:grid;
+  gap:22px;
+}
+.country-head { display:flex; flex-wrap:wrap; align-items:end; justify-content:space-between; gap:14px 28px; }
+.country-head .pick { flex:1 1 280px; min-width:0; display:grid; gap:8px; max-width:420px; }
+.country select {
+  width:100%;
+  padding:12px 14px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--ui);
+  font-size:1rem;
+}
+.country h3 { font-family:var(--display); font-weight:400; font-size:1.6rem; line-height:1.2; margin:0; }
+.badge {
+  font-family:var(--ui);
+  font-size:.75rem;
+  font-weight:600;
+  padding:5px 12px;
+  border-radius:999px;
+  background:var(--accent-soft);
+  color:var(--accent);
+  border:1px solid var(--accent);
+}
+.badge.pending { background:transparent; color:var(--muted); border:1px dashed var(--line); }
+.facts { display:grid; grid-template-columns:minmax(0,11em) minmax(0,1fr); gap:0; margin:0; font-size:1rem; }
+.facts dt, .facts dd { padding:12px 0; border-top:1px solid var(--line); margin:0; min-width:0; }
+.facts dt { font-family:var(--ui); font-size:.78rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); padding-right:16px; padding-top:15px; }
+.facts dd.todo { color:var(--muted); font-style:italic; }
+.sample { padding:22px 24px; background:var(--accent-soft); border-radius:12px; display:grid; gap:10px; }
+.sample h4 { font-family:var(--ui); font-size:.72rem; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); margin:0; }
+.sample p { margin:0; font-size:1rem; line-height:1.65; }
+.sample b { font-weight:600; }
+.pack-note { font-family:var(--ui); font-size:.8rem; color:var(--muted); margin:0; }
+.pending-box { display:grid; gap:12px; justify-items:start; }
+.pending-box p { margin:0; color:var(--muted); max-width:38em; }
+.pending-box .btn { margin-top:4px; padding-inline:22px; }
+
+@media (max-width:650px) {
+  .country { padding:22px 18px; }
+  .facts { grid-template-columns:1fr; }
+  .facts dt { border-top:1px solid var(--line); padding-bottom:0; }
+  .facts dd { border-top:0; padding-top:4px; }
+}
+
+.free {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px 32px;
+  padding:26px 28px;
+  margin-bottom:18px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:14px;
+}
+.free .copy { flex:1 1 320px; min-width:0; }
+.free h3 {
+  font-family:var(--display);
+  font-weight:400;
+  font-size:1.5rem;
+  line-height:1.2;
+  margin:10px 0 6px;
+}
+.free p { margin:0; color:var(--muted); }
+.free .items { margin-top:8px; font-family:var(--ui); font-size:.85rem; color:var(--ink); }
+.free .btn { margin-top:0; flex:0 0 auto; min-width:200px; }
+
+@media (max-width:900px) {
+  .products { grid-template-columns:1fr; }
+}
+@media (max-width:650px) {
+  .masthead { padding-block:32px 28px; }
+  .grid { grid-template-columns:1fr; }
+  .card { padding:22px 20px 18px; }
+  .prose { font-size:1.2rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card, .filter { transition:none; }
+  .card:hover { transform:none; }
+}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <nav class="sitenav" id="sitenav" aria-label="Site">
+    <a href="#home" id="navHome">Reflections</a>
+    <a href="#templates" id="navShop">Templates</a>
+    <a href="#trainings" id="navTrain">Trainings</a>
+  </nav>
+  <main>
+    <section id="home" aria-label="All reflections">
+      <header class="masthead">
+        <p class="label">A personal journal</p>
+        <h1>Things Worth <em>Thinking</em> About</h1>
+        <p class="intro">Thoughts, observations and questions about life, people, and the way we see the world. Explore what speaks to you.</p>
+      </header>
+
+      <div class="controls">
+        <input class="search" id="search" type="search" placeholder="Search reflections" aria-label="Search reflections" autocomplete="off">
+        <div class="filters" id="filters" role="group" aria-label="Filter by topic"></div>
+      </div>
+      <p class="label count" id="count" aria-live="polite"></p>
+      <section class="grid" id="cards"></section>
+      <p class="empty" id="empty" hidden>No reflections match. Try another word or topic.</p>
+    </section>
+
+    <section id="shop" aria-label="HR templates" hidden>
+      <header class="masthead">
+        <p class="label">For organisations without an HR team</p>
+        <h1 id="shopHeading"></h1>
+        <p class="intro shop-intro" id="shopIntro"></p>
+      </header>
+      <section class="fixes" aria-label="What goes wrong and what helps">
+        <div class="fixes-head"><p class="label">Stage</p><p class="label">What usually goes wrong</p><p class="label">What helps</p></div>
+        <div id="fixes"></div>
+      </section>
+      <section class="country" id="country" aria-label="Choose your country">
+        <div class="country-head">
+          <div class="pick">
+            <label class="label" for="countrySelect">Choose your country</label>
+            <select id="countrySelect"></select>
+          </div>
+          <span class="badge" id="countryBadge"></span>
+        </div>
+        <div id="countryBody"></div>
+      </section>
+      <div class="free" id="free"></div>
+      <p class="pricing" id="pricing"></p>
+      <div class="products" id="products"></div>
+      <div class="free" id="service"></div>
+      <p class="shop-note" id="shopNote"></p>
+    </section>
+
+    <section id="training" aria-label="Trainings" hidden>
+      <header class="masthead">
+        <p class="label">Leadership and management</p>
+        <h1 id="trainHeading"></h1>
+        <p class="intro shop-intro" id="trainIntro"></p>
+      </header>
+      <div class="filters" id="trainFilters" role="group" aria-label="Filter trainings by category"></div>
+      <div class="filters" id="trainPrice" role="group" aria-label="Filter by price"></div>
+      <p class="label count" id="trainCount" aria-live="polite"></p>
+      <div class="courses" id="courses"></div>
+      <p class="empty" id="trainEmpty" hidden></p>
+      <p class="shop-note" id="trainNote"></p>
+    </section>
+
+    <article class="reader" id="reader" hidden>
+      <a class="back" href="#home">&larr; All reflections</a>
+      <p class="label" id="readTopic" style="margin-top:28px"></p>
+      <h2 id="readTitle" tabindex="-1"></h2>
+      <p class="lede" id="readPreview"></p>
+      <p class="time" id="readTime"></p>
+      <div class="prose" id="bodyText"></div>
+      <nav class="pager" id="pager" aria-label="More reflections"></nav>
+    </article>
+  </main>
+
+  <footer>Things Worth Thinking About &middot; Read slowly. Think freely.</footer>
+</div>
+
+<script>
+/* ------------------------------------------------------------------
+   Add or edit reflections here.
+   Each one needs: a unique id (lowercase letters, digits and hyphens),
+   a topic, a title, a short preview, its paragraphs, and an optional question.
+   The id becomes the shareable address, e.g. yourpage#perspective
+------------------------------------------------------------------- */
+const reflections = [
+  {
+    id:"human-behaviour",
+    topic:"People",
+    title:"On human behaviour",
+    preview:"Why people do what they do.",
+    paragraphs:[
+      "We often judge people by what they do, but behaviour rarely tells the whole story. People act from a mixture of experience, fear, ambition, habit and the need to belong.",
+      "Understanding someone does not mean excusing every action. It means being curious enough to look beyond the first impression before deciding what their behaviour means."
+    ],
+    question:"What might I be missing about this person's situation?"
+  },
+  {
+    id:"perspective",
+    topic:"Life",
+    title:"On life and perspective",
+    preview:"The difference between what happens and what we make of it.",
+    paragraphs:[
+      "Two people can experience the same event and carry away very different meanings. Our history, expectations and current struggles shape what we notice and how we interpret it.",
+      "Perspective is not pretending that everything is fine. It is recognising that the first interpretation is not always the only possible one."
+    ],
+    question:"What changes when I look at this from another angle?"
+  },
+  {
+    id:"truths",
+    topic:"Beliefs",
+    title:"Uncomfortable truths",
+    preview:"Ideas that challenge what we prefer to believe.",
+    paragraphs:[
+      "Sometimes we defend an opinion because it is right. Sometimes we defend it because it is familiar, protects our identity or helps us feel that we belong.",
+      "Being willing to reconsider a belief is not weakness. It is a way of taking responsibility for the quality of our thinking."
+    ],
+    question:"Which belief would be hardest for me to question, and why?"
+  },
+  {
+    id:"questions",
+    topic:"Questions",
+    title:"Questions without easy answers",
+    preview:"Some questions are valuable even when they remain open.",
+    paragraphs:[
+      "Not every meaningful question needs an immediate conclusion. Some questions help us notice assumptions, listen more carefully or see a problem we had overlooked.",
+      "A thoughtful conversation does not always end with agreement. Sometimes it succeeds because everyone leaves with a better question."
+    ],
+    question:"What question is worth sitting with a little longer?"
+  }
+];
+
+const $ = sel => document.querySelector(sel);
+const home = $("#home"), reader = $("#reader"), cards = $("#cards"), shopEl = $("#shop"), trainEl = $("#training");
+const search = $("#search"), filtersEl = $("#filters");
+const countEl = $("#count"), emptyEl = $("#empty");
+let selectedTopic = "All";
+
+function readingTime(r) {
+  const words = [r.title, r.preview, ...r.paragraphs, r.question || ""].join(" ").split(/\s+/).length;
+  const mins = Math.max(1, Math.round(words / 200));
+  return mins + " min read";
+}
+
+function el(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function renderFilters() {
+  filtersEl.replaceChildren();
+  ["All", ...new Set(reflections.map(r => r.topic))].forEach(topic => {
+    const b = el("button", "filter", topic);
+    b.type = "button";
+    b.setAttribute("aria-pressed", String(topic === selectedTopic));
+    b.addEventListener("click", () => {
+      selectedTopic = topic;
+      renderFilters();
+      renderCards();
+    });
+    filtersEl.append(b);
+  });
+}
+
+function renderCards() {
+  const q = search.value.trim().toLowerCase();
+  const visible = reflections.filter(r =>
+    (selectedTopic === "All" || r.topic === selectedTopic) &&
+    [r.title, r.topic, r.preview, ...r.paragraphs, r.question || ""].join(" ").toLowerCase().includes(q)
+  );
+  cards.replaceChildren();
+  visible.forEach(r => {
+    const a = el("a", "card");
+    a.href = "#" + r.id;
+    a.setAttribute("aria-label", "Read: " + r.title);
+    const meta = el("span", "meta");
+    meta.append(el("span", "", readingTime(r)), el("span", "", "Read →"));
+    a.append(el("span", "label", r.topic), el("h2", "", r.title), el("p", "", r.preview), meta);
+    cards.append(a);
+  });
+  countEl.textContent = visible.length + (visible.length === 1 ? " reflection" : " reflections");
+  emptyEl.hidden = visible.length !== 0;
+}
+
+function pagerLink(r, cls, dir) {
+  const a = el("a", cls);
+  a.href = "#" + r.id;
+  a.append(el("span", "label", dir), el("span", "title", r.title));
+  return a;
+}
+
+function showReflection(r) {
+  $("#readTopic").textContent = r.topic;
+  $("#readTitle").textContent = r.title;
+  $("#readPreview").textContent = r.preview;
+  $("#readTime").textContent = readingTime(r);
+  document.title = r.title + " · Things Worth Thinking About";
+
+  const body = $("#bodyText");
+  body.replaceChildren();
+  r.paragraphs.forEach(t => body.append(el("p", "", t)));
+  if (r.question) {
+    const box = el("div", "prompt");
+    box.append(el("p", "label", "A question to carry"), el("p", "", r.question));
+    body.append(box);
+  }
+
+  const i = reflections.indexOf(r);
+  const pager = $("#pager");
+  pager.replaceChildren();
+  if (i > 0) pager.append(pagerLink(reflections[i - 1], "prev", "← Previous"));
+  if (i < reflections.length - 1) pager.append(pagerLink(reflections[i + 1], "next", "Next →"));
+  pager.hidden = pager.children.length === 0;
+
+  home.hidden = true;
+  shopEl.hidden = true;
+  trainEl.hidden = true;
+  reader.hidden = false;
+  window.scrollTo(0, 0);
+  $("#readTitle").focus({ preventScroll:true });
+}
+
+/* ------------------------------------------------------------------
+   Templates shop. Edit the text, prices and bundles below.
+   The prices are sample prices: change them to your own.
+   To turn on a Buy button, set buyUrl to your checkout link
+   (Gumroad, Payhip, Selar, a payment link, or a WhatsApp link such as
+   "https://wa.me/256700000000"). With no buyUrl, the button reads "Available soon".
+------------------------------------------------------------------- */
+const shop = {
+  heading:"Managing people without an HR department?",
+  intro:"Most small organisations manage staff without an HR professional. From the first hire to the last day, the documents they need are missing, copied from another country, or written from scratch each time. These templates cover each stage of an employee's time with you and follow your country's employment law, so you can manage people fairly and with confidence.",
+  // One row per stage of the employee lifecycle: [stage, what goes wrong, what helps]
+  problems:[
+    ["Hire","Roles are unclear, interviews are inconsistent and offers are vague.","Job description, interview scorecard, reference check and offer letter."],
+    ["Onboard","New staff start without a clear contract or induction, and leave early.","Employment contract, onboarding checklist, induction plan and probation review."],
+    ["Perform and reward","Appraisals and pay decisions depend on opinion.","Goal-setting, appraisal and pay review forms used the same way for everyone."],
+    ["Develop","Training is ad hoc and skills gaps go unnoticed.","Training needs assessment, development plan and training record."],
+    ["Leave and wellbeing","Leave, maternity and sick-leave terms are copied from another country's law.","Leave policy and request forms filled in from your country's law. Choose your country below."],
+    ["Discipline and grievance","A dismissal without the right notice or process ends in a claim.","Warning, disciplinary hearing, grievance and termination forms built around a fair process."],
+    ["Exit","People leave without a handover, clearance or any learning.","Resignation, exit interview, clearance and handover checklists."]
+  ],
+  pricing:"Start with the free sample. The bundles follow the stages above, and fees are adjusted to what organisations in each country can afford.",
+  note:"Templates are practical guidance and not legal advice. Check them against current employment law and your own policies before use.",
+  // Free sample. Set freeUrl to a link where people can download it
+  // (for example a shared Google Drive or Dropbox file, or a free product on Gumroad or Payhip).
+  // Where people ask for a country that is still in preparation, for example "https://wa.me/256700000000"
+  requestUrl:"",
+  free:{
+    name:"Free Starter Sample",
+    tagline:"Try three templates first, at no cost. Use them as they are, or see whether the rest would help you.",
+    includes:["Job description","Leave request form","Onboarding checklist"],
+    freeUrl:""
+  },
+  products:[
+    {
+      name:"Hire and onboard",
+      tagline:"From the job advert to the end of probation.",
+      price:"UGX 60,000",
+      includes:["Job description and interview scorecard","Reference check and offer letter","Employment contract","Onboarding checklist and induction plan","Probation review form"],
+      buyUrl:""
+    },
+    {
+      name:"Manage and develop",
+      tagline:"Fair, consistent ways to set goals, review work and grow people.",
+      price:"UGX 60,000",
+      includes:["Goal-setting form","Appraisal form","Pay review form","Training needs assessment","Development plan and training record"],
+      buyUrl:""
+    },
+    {
+      name:"Leave, discipline and exit",
+      tagline:"For the difficult moments, handled by a fair and documented process.",
+      price:"UGX 60,000",
+      includes:["Leave policy and request forms","Warning letters and disciplinary hearing form","Grievance form","Termination and resignation letters","Exit interview and clearance checklist"],
+      buyUrl:""
+    },
+    {
+      name:"Complete HR system",
+      tagline:"One consistent set of documents from the first hire to the last day.",
+      price:"UGX 150,000",
+      featured:true,
+      includes:["All three bundles above","Your country's rules filled in where available"],
+      buyUrl:""
+    }
+  ],
+  // Optional done-for-you service shown below the bundles
+  service:{
+    name:"Set up for your organisation",
+    tagline:"We prepare the documents with your own wording, branding and approval steps, and walk you through them.",
+    price:"From UGX 400,000",
+    includes:["Your logo, wording and approval steps","One review call","Two rounds of changes"],
+    buyUrl:""
+  }
+};
+
+/* ------------------------------------------------------------------
+   Country packs. Every African country is listed. A country has a full
+   pack only once its figures are in the table below. To add one, copy the
+   Uganda entry, fill each field from the country's current law, and set
+   checked to the date you verified it. Countries without an entry show
+   "in preparation" and a request button (set shop.requestUrl).
+   Leave a field out and it shows "To be confirmed".
+------------------------------------------------------------------- */
+const africa = ["Algeria","Angola","Benin","Botswana","Burkina Faso","Burundi","Cabo Verde","Cameroon","Central African Republic","Chad","Comoros","Democratic Republic of the Congo","Republic of the Congo","Côte d'Ivoire","Djibouti","Egypt","Equatorial Guinea","Eritrea","Eswatini","Ethiopia","Gabon","Gambia","Ghana","Guinea","Guinea-Bissau","Kenya","Lesotho","Liberia","Libya","Madagascar","Malawi","Mali","Mauritania","Mauritius","Morocco","Mozambique","Namibia","Niger","Nigeria","Rwanda","São Tomé and Príncipe","Senegal","Seychelles","Sierra Leone","Somalia","South Africa","South Sudan","Sudan","Tanzania","Togo","Tunisia","Uganda","Zambia","Zimbabwe"];
+
+const packs = {
+  "Uganda": {
+    checked:"30 October 2026",
+    law:"Employment Act, 2006",
+    annualLeave:"Seven days of paid leave for each four months of continuous service (21 days a year). It applies after six months of continuous service to employees who normally work 16 or more hours a week (s. 54).",
+    maternity:"60 working days on full wages, with at least four weeks taken after the birth or miscarriage (s. 56).",
+    paternity:"Four working days on full wages (s. 57).",
+    sick:"Full wages for the first month of absence for employees with at least one month of service (s. 55).",
+    notice:"Employees with 6 to 12 months of service: at least 2 weeks. 1 to 5 years: at least 1 month. 5 to 10 years: at least 2 months. 10 years or more: at least 3 months (s. 58).",
+    hours:"48 hours a week. Overtime is paid at no less than 1.5 times the normal hourly rate, and 2 times on gazetted public holidays (s. 53).",
+    severance:"Due after six months of service in the situations the Act lists, such as unfair dismissal. The amount is negotiated and is not fixed by the Act (ss. 87 and 89)."
+  },
+  "Kenya": {
+    checked:"30 October 2026",
+    law:"Employment Act, 2007",
+    annualLeave:"At least 21 working days of paid leave after every 12 consecutive months of service. Leaving mid-cycle earns at least 1.75 days for each completed month (s. 28).",
+    maternity:"Three months on full pay (s. 29).",
+    paternity:"Two weeks on full pay (s. 29).",
+    sick:"After two consecutive months of service, seven days on full pay and then seven days on half pay in each 12 months, supported by a medical certificate (s. 30).",
+    notice:"Monthly-paid employees: 28 days' written notice. Probationary contracts: at least 7 days (ss. 35 and 42).",
+    hours:"At least one rest day in every seven days (s. 27).",
+    severance:"On redundancy, at least 15 days' pay for each completed year of service (s. 40)."
+  }
+};
+
+const countryFields = [
+  ["Law","law"],["Annual leave","annualLeave"],["Maternity leave","maternity"],["Paternity leave","paternity"],
+  ["Sick leave","sick"],["Notice of termination","notice"],["Hours and rest","hours"],["Severance","severance"]
+];
+let selectedCountry = "Uganda";
+try { selectedCountry = localStorage.getItem("country") || "Uganda"; } catch (e) {}
+if (!africa.includes(selectedCountry)) selectedCountry = "Uganda";
+
+function initCountry() {
+  const sel = $("#countrySelect");
+  sel.replaceChildren();
+  const ready = africa.filter(c => packs[c]);
+  const later = africa.filter(c => !packs[c]);
+  [["Country pack ready", ready], ["In preparation", later]].forEach(([title, list]) => {
+    const g = document.createElement("optgroup");
+    g.label = title;
+    list.forEach(c => {
+      const o = document.createElement("option");
+      o.value = c;
+      o.textContent = c;
+      g.append(o);
+    });
+    sel.append(g);
+  });
+  sel.value = selectedCountry;
+  sel.addEventListener("change", () => {
+    selectedCountry = sel.value;
+    try { localStorage.setItem("country", selectedCountry); } catch (e) {}
+    renderShop();
+  });
+}
+
+function renderCountry() {
+  const c = selectedCountry, p = packs[c];
+  const body = $("#countryBody"), badge = $("#countryBadge");
+  body.replaceChildren();
+  if (!p) {
+    badge.textContent = "In preparation";
+    badge.className = "badge pending";
+    const box = el("div", "pending-box");
+    box.append(
+      el("h3", "", c + " country pack"),
+      el("p", "", "We have not yet checked " + c + "'s employment law for this pack, so we do not show figures for it. Tell us you want it and it moves up the list."),
+    );
+    if (shop.requestUrl) {
+      const a = el("a", "btn", "Request the " + c + " pack");
+      a.href = shop.requestUrl;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      box.append(a);
+    } else {
+      box.append(el("span", "btn off", "Requests open soon"));
+    }
+    body.append(box);
+    return;
+  }
+  badge.textContent = "Checked " + p.checked;
+  badge.className = "badge";
+  body.append(el("h3", "", c + " country pack"));
+
+  const dl = el("dl", "facts");
+  countryFields.forEach(([label, key]) => {
+    dl.append(el("dt", "", label), el("dd", p[key] ? "" : "todo", p[key] || "To be confirmed"));
+  });
+  body.append(dl);
+
+  const fill = key => p[key] || "[to be confirmed for " + c + "]";
+  const sample = el("div", "sample");
+  sample.append(el("h4", "", "How it appears in your Leave Policy template"));
+  [
+    ["Annual leave. ", fill("annualLeave")],
+    ["Maternity leave. ", fill("maternity")],
+    ["Paternity leave. ", fill("paternity")],
+    ["Sick leave. ", fill("sick")]
+  ].forEach(([lead, text]) => {
+    const para = el("p");
+    para.append(el("b", "", lead), document.createTextNode(text));
+    sample.append(para);
+  });
+  body.append(sample);
+
+  body.append(el("p", "pack-note", "Based on the " + p.law + " as published. Later amendments, regulations, sector rules and collective agreements were not checked, so have a local lawyer or labour officer confirm before use. This is guidance and not legal advice."));
+}
+
+function renderStrip(box, d, label, url, btnText, price) {
+  box.replaceChildren();
+  box.hidden = !d;
+  if (!d) return;
+  const copy = el("div", "copy");
+  copy.append(el("span", "label", label), el("h3", "", d.name), el("p", "", d.tagline));
+  if (price) copy.append(el("p", "price-line", price));
+  copy.append(el("p", "items", d.includes.join(" \u00b7 ")));
+  let btn;
+  if (url) {
+    btn = el("a", "btn", btnText);
+    btn.href = url;
+    btn.target = "_blank";
+    btn.rel = "noopener noreferrer";
+  } else {
+    btn = el("span", "btn off", "Available soon");
+  }
+  box.append(copy, btn);
+}
+
+function renderShop() {
+  renderCountry();
+  $("#shopHeading").textContent = shop.heading;
+  $("#shopIntro").textContent = shop.intro;
+  $("#pricing").textContent = shop.pricing;
+  const fx = $("#fixes");
+  fx.replaceChildren();
+  shop.problems.forEach(([stage, problem, remedy]) => {
+    const row = el("div", "fix");
+    row.append(el("p", "stage", stage), el("p", "problem", problem), el("p", "remedy", remedy));
+    fx.append(row);
+  });
+  $("#shopNote").textContent = shop.note;
+  renderStrip($("#free"), shop.free, "Free", shop.free && shop.free.freeUrl, "Download free", "");
+  renderStrip($("#service"), shop.service, "Done for you", shop.service && shop.service.buyUrl, "Ask about this", shop.service ? shop.service.price : "");
+
+  const box = $("#products");
+  box.replaceChildren();
+  shop.products.forEach(p => {
+    const card = el("div", "product" + (p.featured ? " featured" : ""));
+    const list = el("ul");
+    p.includes.forEach(item => list.append(el("li", "", item)));
+    let action;
+    if (p.buyUrl) {
+      action = el("a", "btn", "Get this bundle");
+      action.href = p.buyUrl;
+      action.target = "_blank";
+      action.rel = "noopener noreferrer";
+    } else {
+      action = el("span", "btn off", "Available soon");
+    }
+    card.append(
+      el("span", "label", (p.featured ? "Most complete" : "Bundle") + " · " + selectedCountry),
+      el("h3", "", p.name),
+      el("p", "tagline", p.tagline),
+      el("p", "price", p.price),
+      list,
+      action
+    );
+    box.append(card);
+  });
+}
+
+/* ------------------------------------------------------------------
+   Trainings. These are courses run by other organisations, listed as a guide.
+   Each needs: title, category, url (the course's own page), summary, price,
+   effort, and either start (YYYY-MM-DD) or onDemand:true. Optional: sessions
+   (number of further sessions) and payBy (YYYY-MM-DD). Add new courses and
+   categories here; a filter appears once there are two or more categories.
+------------------------------------------------------------------- */
+const trainings = {
+  heading:"Training for the people who manage people",
+  intro:"HR documents work best when the managers using them are confident. These leadership and management courses are run by Harvard Business School Online. We list them as a guide. We do not run or sell them, and we are not affiliated with the school.",
+  note:"Course details were copied from the HBS Online website and can change. Check each course page for current dates, prices and what is included before you enrol. Prices are the listed course fees, not including any VAT or taxes that may apply.",
+  provider:"HBS Online",
+  // The school charges in US dollars. Prices are shown in Ugandan shillings at this rate.
+  // Update rate and date when you republish.
+  fx:{ rate:4360, date:"29 Oct 2026" },
+  // Highest price shown by default, in UGX before VAT. Visitors can switch to "Any price". Set to 0 to show everything by default.
+  maxUgx:1200000,
+  // For a course priced in shillings, use ugx:900000 instead of usd:1949.
+  courses:[
+    {title:"Negotiation Mastery", category:"Leadership and management", url:"https://online.hbs.edu/courses/negotiation", summary:"Build negotiation skills to create value, influence outcomes, and navigate difficult conversations. Learn on your schedule with 90 days of full access starting the day you enroll.", onDemand:true, usd:1949, effort:"32-40 hrs, 8-10 hrs per module"},
+    {title:"Leadership Principles", category:"Leadership and management", url:"https://online.hbs.edu/courses/leadership-principles", summary:"Build the confidence, self-awareness, and leadership approach to motivate teams and drive performance.", start:"2026-11-04", sessions:2, payBy:"2026-11-02", usd:1949, effort:"35-40 hrs, 7-9 hrs a week"},
+    {title:"Leading Change and Organizational Renewal", category:"Leadership and management", url:"https://online.hbs.edu/courses/leading-change-organizational-renewal", summary:"Lead organizational transformation by navigating disruption, reshaping culture, and balancing today's execution with tomorrow's innovation.", start:"2026-11-04", sessions:2, payBy:"2026-11-02", usd:1949, effort:"30-40 hrs, 5-7 hrs a week"},
+    {title:"Management Essentials", category:"Leadership and management", url:"https://online.hbs.edu/courses/management-essentials", summary:"Explore a practical, foundational approach for everyday management with actionable frameworks for running effective meetings, strengthening team performance, and adapting the systems and incentives that drive results in today's AI-enabled, distributed organizations.", start:"2026-11-18", sessions:2, payBy:"2026-11-16", usd:1949, effort:"20-25 hrs, 5-6 hrs a week"},
+    {title:"Dynamic Teaming", category:"Leadership and management", url:"https://online.hbs.edu/courses/dynamic-teaming", summary:"Build adaptable, high-performing teams by improving collaboration, communication, and decision-making in rapidly changing environments.", start:"2026-11-18", sessions:2, payBy:"2026-11-16", usd:1949, effort:"24-28 hrs, 6-7 hrs a week"},
+    {title:"Strategy Execution", category:"Leadership and management", url:"https://online.hbs.edu/courses/strategy-execution", summary:"Turn strategy into results by aligning goals, managing priorities, and driving accountability.", start:"2026-11-18", sessions:2, payBy:"2026-11-16", usd:1949, effort:"40-45 hrs, 5-8 hrs a week"},
+    {title:"Organizational Leadership", category:"Leadership and management", url:"https://online.hbs.edu/courses/organizational-leadership", summary:"Lead across teams, functions, and geographies by aligning people, strategy, and organizational performance.", start:"2027-01-20", sessions:1, payBy:"2027-01-18", usd:1949, effort:"45-50 hrs, 6-8 hrs a week"},
+    {title:"Leadership, Ethics, and Corporate Accountability", category:"Leadership and management", url:"https://online.hbs.edu/courses/leadership-ethics-corporate-accountability", summary:"Lead with integrity by navigating tough decisions, stakeholder expectations, and organizational accountability.", start:"2027-01-27", sessions:0, payBy:"2027-01-25", usd:1949, effort:"40-50 hrs, 7-9 hrs a week"},
+    {title:"Transforming Customer Experiences", category:"Leadership and management", url:"https://online.hbs.edu/courses/transforming-customer-experiences", summary:"Build customer loyalty and drive business growth by delivering exceptional service and customer experiences.", start:"2027-02-03", sessions:1, payBy:"2027-02-01", usd:1949, effort:"20-25 hrs, 5-6 hrs per module"},
+    {title:"Power and Influence for Positive Impact", category:"Leadership and management", url:"https://online.hbs.edu/courses/power-influence-positive-impact", summary:"Understand how power works and develop your own to build influence, strengthen relationships, and drive impact.", start:"2027-02-03", sessions:1, payBy:"2027-02-01", usd:1949, effort:"35-40 hrs, 4-8 hrs a week"}
+  ]
+};
+let trainCategory = "All";
+let trainCapOn = trainings.maxUgx > 0;
+const ugxOf = c => c.ugx || Math.round(c.usd * trainings.fx.rate / 10000) * 10000;
+
+function fmtDate(iso) {
+  return new Date(iso + "T00:00:00Z").toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric", timeZone:"UTC" });
+}
+
+function renderTrainings() {
+  $("#trainHeading").textContent = trainings.heading;
+  $("#trainIntro").textContent = trainings.intro;
+  $("#trainNote").textContent = trainings.note + " Prices are shown in Ugandan shillings, converted at about UGX " + trainings.fx.rate.toLocaleString("en-US") + " per US dollar on " + trainings.fx.date + ". The school charges in US dollars, so what you pay will change with the exchange rate.";
+
+  const cats = [...new Set(trainings.courses.map(c => c.category))];
+  const fbox = $("#trainFilters");
+  fbox.replaceChildren();
+  fbox.hidden = cats.length < 2;
+  if (cats.length >= 2) {
+    ["All", ...cats].forEach(cat => {
+      const b = el("button", "filter", cat);
+      b.type = "button";
+      b.setAttribute("aria-pressed", String(cat === trainCategory));
+      b.addEventListener("click", () => { trainCategory = cat; renderTrainings(); });
+      fbox.append(b);
+    });
+  }
+
+  const pbox = $("#trainPrice");
+  pbox.replaceChildren();
+  pbox.hidden = !(trainings.maxUgx > 0);
+  if (trainings.maxUgx > 0) {
+    [[true, "Up to UGX " + trainings.maxUgx.toLocaleString("en-US") + " before VAT"], [false, "Any price"]].forEach(([on, label]) => {
+      const b = el("button", "filter", label);
+      b.type = "button";
+      b.setAttribute("aria-pressed", String(on === trainCapOn));
+      b.addEventListener("click", () => { trainCapOn = on; renderTrainings(); });
+      pbox.append(b);
+    });
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+  const list = trainings.courses
+    .filter(c => trainCategory === "All" || c.category === trainCategory)
+    .filter(c => !(trainCapOn && trainings.maxUgx > 0) || ugxOf(c) <= trainings.maxUgx)
+    .sort((a, b) => (a.onDemand ? "" : a.start).localeCompare(b.onDemand ? "" : b.start));
+
+  $("#trainCount").textContent = list.length + (list.length === 1 ? " course" : " courses");
+  const box = $("#courses");
+  box.replaceChildren();
+  const emptyEl = $("#trainEmpty");
+  emptyEl.hidden = list.length !== 0;
+  emptyEl.textContent = "No courses are listed at or under UGX " + trainings.maxUgx.toLocaleString("en-US") + " before VAT yet. Choose \u201cAny price\u201d to see every course, including those from HBS Online that cost more.";
+  list.forEach(c => {
+    const card = el("article", "course");
+    const facts = el("ul", "facts-list");
+    const row = (k, v) => { const li = el("li"); li.append(el("span", "", k), el("span", "", v)); facts.append(li); };
+
+    if (c.onDemand) {
+      row("Starts", "Any day, on demand");
+    } else if (c.start >= today) {
+      const more = c.sessions ? " (" + c.sessions + " more session" + (c.sessions === 1 ? "" : "s") + " after)" : "";
+      row("Next start", fmtDate(c.start) + more);
+      if (c.payBy && c.payBy >= today) row("Pay by", fmtDate(c.payBy));
+    } else {
+      row("Next start", "Check the course page");
+    }
+    row("Price", (c.ugx ? "UGX " : "About UGX ") + ugxOf(c).toLocaleString("en-US"));
+    row("Time needed", c.effort);
+
+    const link = el("a", "btn", "View on " + trainings.provider + " \u2197");
+    link.href = c.url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    card.append(el("span", "label", c.category), el("h3", "", c.title), el("p", "summary", c.summary), facts, link);
+    box.append(card);
+  });
+}
+
+function setNav(view) {
+  [["home", "#navHome"], ["shop", "#navShop"], ["train", "#navTrain"]].forEach(([v, sel]) => {
+    const a = $(sel);
+    if (v === view) a.setAttribute("aria-current", "page");
+    else a.removeAttribute("aria-current");
+  });
+}
+
+function route() {
+  let id = "";
+  try { id = decodeURIComponent(location.hash.slice(1)); } catch (e) {}
+  const r = reflections.find(item => item.id === id);
+  if (r) {
+    setNav("home");
+    showReflection(r);
+    return;
+  }
+  reader.hidden = true;
+  home.hidden = true;
+  shopEl.hidden = true;
+  trainEl.hidden = true;
+  if (id === "templates") {
+    setNav("shop");
+    document.title = "HR templates \u00b7 Things Worth Thinking About";
+    shopEl.hidden = false;
+  } else if (id === "trainings") {
+    setNav("train");
+    document.title = "Trainings \u00b7 Things Worth Thinking About";
+    trainEl.hidden = false;
+  } else {
+    setNav("home");
+    document.title = "Things Worth Thinking About";
+    home.hidden = false;
+  }
+  window.scrollTo(0, 0);
+}
+
+search.addEventListener("input", renderCards);
+window.addEventListener("hashchange", route);
+
+renderFilters();
+renderCards();
+initCountry();
+renderShop();
+renderTrainings();
+route();
+</script>
+</body>
+</html>
